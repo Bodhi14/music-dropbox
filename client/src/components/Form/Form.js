@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
 import './form.css';
 
 const SongForm = () => {
+
+  const [songs, setSongs] = useState();
+
   // Validation schema using Yup
   const validationSchema = Yup.object().shape({
     songId: Yup.number()
@@ -11,25 +15,43 @@ const SongForm = () => {
     .integer('Song ID must be an integer')
     .required('Song ID is required'),
     songName: Yup.string().required('Song Name is required'),
-    songFile: Yup.mixed()
-    .required('Song file is required')
-    .test('fileFormat', 'Invalid file format. Only MP3 files are allowed.', (value) => {
-      if (value) {
-        return value.type === 'audio/mpeg';
-      }
-      return true;
-    }),
+    songLink: Yup.string().required('Song Link is required')
   });
 
   // Function to handle form submission
   const handleSubmit = (values, { setSubmitting }) => {
     // Simulating form submission
-    setTimeout(() => {
-      console.log(values);
+    setTimeout(async() => {
+      const resp = await axios.post('/api', {
+        songId: values.songId,
+        songName: values.songName,
+        songLink: values.songLink,
+      }).then((res)=> {
+        console.log("Data is sent to the express server");
+        console.log(res.data)
+      }).catch(()=> {
+        console.log("Data is not sent to the express server");
+      });
       alert(JSON.stringify(values, null, 2));
       setSubmitting(false);
     }, 500);
   };
+
+  const getSongs = async() => {
+    axios.get('/api')
+    .then((res) => {
+        let data = res.data;
+        console.log(data);
+        setSongs(data);
+      })
+    .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  useEffect(()=> {
+      getSongs();
+  }, [])
 
   return (
     <div>
@@ -38,15 +60,15 @@ const SongForm = () => {
         initialValues={{
           songId: '',
           songName: '',
-          songFile: null,
+          songLink: '',
         }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting, setFieldValue }) => (
+        {({ isSubmitting }) => (
           <Form className="form-content">
             <div>
-              <label htmlFor="songId">Song ID:</label>
+              <label htmlFor="songId">Song ID: </label>
               <Field type="text" id="songId" name="songId" />
               <div className='error-message'>
               <ErrorMessage name="songId" component="div" className="error" />
@@ -54,7 +76,7 @@ const SongForm = () => {
             </div>
 
             <div>
-              <label htmlFor="songName">Song Name:</label>
+              <label htmlFor="songName">Song Name: </label>
               <Field type="text" id="songName" name="songName" />
               <div className='error-message'>
               <ErrorMessage name="songName" component="div" className="error" />
@@ -62,17 +84,10 @@ const SongForm = () => {
             </div>
 
             <div>
-              <label htmlFor="songFile">Song File:</label>
-              <input
-                type="file"
-                id="songFile"
-                name="songFile"
-                onChange={(event) => {
-                  setFieldValue('songFile', event.currentTarget.files[0]);
-                }}
-              />
+              <label htmlFor="songLink">Song Link: </label>
+              <Field type="text" id="songLink" name="songLink" />
               <div className='error-message'>
-              <ErrorMessage name="songFile" component="div" className="error" />
+              <ErrorMessage name="songLink" component="div" className="error" />
               </div>
             </div>
 
