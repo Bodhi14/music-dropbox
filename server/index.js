@@ -1,20 +1,46 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-const path = require('path');
+const dotenv = require('dotenv');
+const connectDB = require('../server/Connect');
+const songData = require('../server/models/songs');
+const songs = require('../server/models/songs');
 const app = express();
-app.use(express.json());
+
+dotenv.config();
+
+connectDB();
+
+// middlewares
 app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const port = process.env.PORT  || 8080;
-app.get("/", (req, res)=> {
-    res.sendFile(path.resolve('../client/public', 'index.html'));
-});
+app.post("/api", async(req, res) => {
 
-app.use(express.static('../client/public'));
+   let song = new songData();
+   console.log(req.body);
+   song.songID = req.body.songId;
+   song.songName = req.body.songName;
+   song.songLink = req.body.songLink;
+   const doc = await song.save();
+   console.log(doc);
+   res.json(req.body);
+})
+
+app.get("/api", async(request, response)=> {
+      const docs = await songs.find({});
+      response.json(docs);
+})
+
+const port = process.env.PORT;
 
 app.listen(port, () => {
    console.log("Server is running on port " + port);
 });
+
+
 
 
 
