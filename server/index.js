@@ -18,20 +18,27 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post("/api", async(req, res) => {
-
    let song = new songData();
-   console.log(req.body);
    song.songID = req.body.songId;
    song.songName = req.body.songName;
    song.songLink = req.body.songLink;
    const doc = await song.save();
-   console.log(doc);
    res.json(req.body);
 })
 
 app.get("/api", async(request, response)=> {
       const docs = await songs.find({});
       response.json(docs);
+})
+
+app.get("/api/:id", async(req, res)=> {
+   const doc = await songs.findById(req.params.id);
+   res.json(doc);
+})
+
+app.delete("/api/:id", async(req, res)=> {
+   const result = await songs.findOneAndDelete({_id: req.params.id});
+   res.send(result);
 })
 
 const port = process.env.PORT;
