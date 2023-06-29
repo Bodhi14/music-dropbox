@@ -22,7 +22,7 @@ const SongForm = () => {
   const handleSubmit = (values, { setSubmitting }) => {
     // Simulating form submission
     setTimeout(async () => {
-      const resp = await axios.post('/api', {
+      const resp = await axios.post('https://music-dropbox-api.vercel.app/api', {
         songId: values.songId,
         songName: values.songName,
         songLink: values.songLink,
@@ -39,7 +39,7 @@ const SongForm = () => {
   };
 
   const getSongs = async () => {
-    axios.get('/api')
+    axios.get('https://music-dropbox-api.vercel.app/api')
       .then((res) => {
         let data = res.data;
         setSongs(data);
@@ -52,7 +52,7 @@ const SongForm = () => {
   
 
   const deletehandler = async(id) => {
-        await axios.delete(`/api/${id}`)
+        await axios.delete(`https://music-dropbox-api.vercel.app/api/${id}`)
         .then((res) => {
           alert("Song is removed from the library");
           console.log(res);
