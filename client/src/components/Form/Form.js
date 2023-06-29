@@ -49,6 +49,8 @@ const SongForm = () => {
       });
   }
 
+  
+
   const deletehandler = async(id) => {
         await axios.delete(`/api/${id}`)
         .then((res) => {
@@ -126,7 +128,7 @@ const SongForm = () => {
           </thead>
           <tbody>
 
-            {songs.map((song) => {
+            {Array.from(songs).map((song) => {
               const key = song._id;
               return (
                 <tr key={key}>
