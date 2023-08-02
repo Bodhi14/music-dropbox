@@ -5,5 +5,6 @@ An application where users can store their favorite songs in a unique place( Son
 Tech Stacks Used:-
 
 * ReactJS
+* Node.js
 * Express.js
 * MongoDB
